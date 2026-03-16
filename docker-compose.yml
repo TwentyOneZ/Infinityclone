@@ -2,7 +2,7 @@ services:
   # --- NOVO SERVIÇO: Ponte MQTT (Python) ---
   mqtt-bridge:
     build: ./mqtt-bridge                # Pasta onde devem estar o main.py e o Dockerfile do conversor
-    container_name: painel-mqtt-bridge
+    container_name: intiniftyclone
     restart: unless-stopped
     environment:
       MQTT_BROKER: cerise.freeddns.org
