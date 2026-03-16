@@ -1,0 +1,11 @@
+# Adicione o serviço de conversão
+  mqtt-bridge:
+    build: 
+      context: .
+    container_name: painel-mqtt-bridge
+    restart: unless-stopped
+    environment:
+      MQTT_BROKER: cerise.freeddns.org
+      MQTT_PORT: 30001
+      MQTT_USER: infinitwin_user
+      MQTT_PASS: IwtLab#2025!
