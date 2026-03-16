@@ -1,7 +1,7 @@
-# Adicione o serviço de conversão
+services:
+  # --- NOVO SERVIÇO: Ponte MQTT (Python) ---
   mqtt-bridge:
-    build: 
-      context: .
+    build: ./mqtt-bridge                # Pasta onde devem estar o main.py e o Dockerfile do conversor
     container_name: painel-mqtt-bridge
     restart: unless-stopped
     environment:
