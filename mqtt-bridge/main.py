@@ -2,7 +2,7 @@ import paho.mqtt.client as mqtt
 import json
 import os
 
-# Configurações do Broker MQTT (usando valores padrão do seu projeto)
+# Configurações do Broker MQTT
 MQTT_BROKER = os.getenv("MQTT_BROKER", "cerise.freeddns.org")
 MQTT_PORT = int(os.getenv("MQTT_PORT", 30001))
 MQTT_USER = os.getenv("MQTT_USER", "infinitwin_user")
@@ -24,6 +24,12 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     try:
+        # ---- PREVENÇÃO DE LOOP INFINITO ----
+        # Ignora mensagens geradas pelo próprio backend (server.js)
+        if "estimatedPower" in msg.topic:
+            return
+        # ------------------------------------
+
         # Decodifica o payload de entrada
         payload = json.loads(msg.payload.decode('utf-8'))
         
@@ -31,7 +37,6 @@ def on_message(client, userdata, msg):
         out_topic = f"/ditto/events{msg.topic}"
         
         # Separa o namespace do thingId real do equipamento
-        # Ex: "painelfotovoltaico.gerador:BMP280" -> namespace: "painelfotovoltaico.gerador", thingId: "BMP280"
         original_thing_id = payload.get("thingId", "")
         if ":" in original_thing_id:
             namespace, thing_id = original_thing_id.split(":", 1)
