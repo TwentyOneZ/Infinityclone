@@ -11,7 +11,8 @@ MQTT_PASS = os.getenv("MQTT_PASS", "IwtLab#2025!")
 # Tópicos de entrada (sem o prefixo do ditto)
 INPUT_TOPICS = [
     ("/painelfotovoltaico.gerador/#", 0),
-    ("/painelfotovoltaico.referencia/#", 0)
+    ("/painelfotovoltaico.referencia/#", 0),
+    ("/painelfotovoltaico.node/#", 0)       # <-- NOVO: Escuta o estado agregado (all) e os comandos (pvConfig)
 ]
 
 def on_connect(client, userdata, flags, rc):
@@ -25,7 +26,7 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     try:
         # ---- PREVENÇÃO DE LOOP INFINITO ----
-        # Ignora mensagens geradas pelo próprio backend (server.js)
+        # Ignora a potência estimada gerada pelo próprio backend (evita o spam)
         if "estimatedPower" in msg.topic:
             return
         # ------------------------------------
@@ -33,7 +34,7 @@ def on_message(client, userdata, msg):
         # Decodifica o payload de entrada
         payload = json.loads(msg.payload.decode('utf-8'))
         
-        # O novo tópico precisa ter o prefixo esperado pelo server.js
+        # O novo tópico precisa ter o prefixo esperado /ditto/events/
         out_topic = f"/ditto/events{msg.topic}"
         
         # Separa o namespace do thingId real do equipamento
